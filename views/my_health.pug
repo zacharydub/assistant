@@ -1,0 +1,9 @@
+extends layout
+
+block main
+  ul#segments
+    each segment in segments
+      li
+        figure
+          img(src=`../images/${segment.file}` alt=segment.alt)
+          figcaption=segment.caption

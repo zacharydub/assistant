@@ -1,0 +1,23 @@
+extends layout
+
+block main
+  h2 All My Contacts
+  table
+    thead
+      tr
+        th Name
+        th Phone Number
+    tbody
+      each contact in contacts
+        tr
+          td #{contact.lastName}, #{contact.firstName}
+          td= contact.phoneNumber
+            form(action=`/contacts/${contact.id}/edit` method="get")
+              button.edit(type="submit") Edit
+            form.delete(action=`/contacts/${contact.id}/destroy`
+                      method="post")
+              button Delete
+    tfoot
+      tr
+        td(colspan="3")
+          a(href=`/contacts/new`) New Contact

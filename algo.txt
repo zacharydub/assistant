@@ -1,0 +1,8 @@
+homepage
+  - / route
+  - top-left icon button on layout.pug
+
+  - main: Enjoy using your personal assistant, where you can make use of todo lists, a contacts manager, and assess your basic health
+
+layout:
+  - nav bar - Home, Todos, Contacts, My Health

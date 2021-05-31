@@ -1,0 +1,37 @@
+doctype html
+
+html(lang=language)
+  head
+    block page_title
+      title Personal Assistant
+    meta(charset="UTF-8")
+    link(rel="stylesheet" href="//fonts.googleapis.com/css?family=PT+Sans")
+    link(rel="stylesheet" href="/stylesheets/application.css")
+    link(rel="stylesheet" href="/stylesheets/whitespace-reset.css")
+    script(src="/javascripts/application.js")
+
+  body
+    h1 Personal Assistant
+
+    nav
+      ul(class='nav')
+        li(class='nav_item')
+          a(href="/home-page" class=currentPathClass('/home-page',currentPath)) Home
+        li(class='nav_item')
+          a(href="/lists" class=currentPathClass('/lists',currentPath)) Todos
+        li(class='nav_item')
+          a(href="/contacts" class=currentPathClass('/contacts',currentPath)) Contacts
+        li(class='nav_item')
+          a(href="/my_health" class=currentPathClass('/my_health',currentPath)) My Health
+    header
+      block header
+
+    main
+      - let kinds = Object.keys(flash || {});
+      if kinds.length > 0
+        ul
+          each kind in kinds
+            each message in flash[kind]
+              li.flash(class=kind)= message
+
+      block main
