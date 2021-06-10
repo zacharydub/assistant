@@ -8,12 +8,12 @@ const Todo = require("./lib/todo");
 const Contact = require("./lib/contact");
 const { sortTodoLists, sortTodos } = require("./lib/sort");
 const store = require("connect-loki");
-const favicon = require("serve-favicon");
+//const favicon = require("serve-favicon");
 
 
 const app = express();
 const host = "localhost";
-const port = 3001;
+//const port = 3001;
 const LokiStore = store(session);
 
 //const contactData = [
@@ -94,7 +94,7 @@ app.set("view engine", "pug");
 app.use(morgan("common"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
-app.use(favicon(path.join(dirname, "build", "favicon.ico")));
+//app.use(favicon(path.join(dirname, "build", "favicon.ico")));
 app.use(session({
   cookie: {
     httpOnly: true,
@@ -538,6 +538,6 @@ app.use((err, req, res, _next) => {
 });
 
 // Listener
-app.listen(port, host, () => {
+app.listen(3001, host, () => {
   console.log(`Todos is listening on port ${port} of ${host}!`);
 });
