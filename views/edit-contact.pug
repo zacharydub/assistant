@@ -1,0 +1,28 @@
+extends layout
+
+block main
+  h2 Edit Contact
+  form(action=`/contacts/${contactid}/edit` method='post')
+    fieldset
+      dl
+        dt
+          label(for="firstName") First Name:
+        dd
+          input(type="text" id="firstName" name="firstName" value=current.firstName)
+      dl
+        dt
+          label(for="lastName") Last name:
+        dd
+          input(type="text" id="lastName" name="lastName" value=current.lastName)
+      dl
+        dt
+          label(for="phoneNumber") Phone Number:
+        dd
+          input(type="text"
+                id="phoneNumber"
+                name="phoneNumber"
+                placeholder="###-###-####"
+                value=current.phoneNumber)
+    fieldset
+      input(type="submit" value="Save")
+      button.cancel(formaction="/contacts" formmethod="get") Cancel

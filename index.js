@@ -449,7 +449,7 @@ app.post("/contacts/new",
   (req, res) => {
     //console.log(req.body)
     let { firstName, lastName, phoneNumber } = req.body
-    console.log(firstName)
+    console.log(firstName);
     req.session.contactData.push(
       new Contact(firstName, lastName, phoneNumber)
       //  {
@@ -463,10 +463,62 @@ app.post("/contacts/new",
     res.redirect("/contacts");
   }
 );
+app.get("/contacts/:contactid/edit", (req, res, next) => {
+  let id = req.params.contactid;
+  let list = req.session.contactData;
+  let current = list.find(elm => elm.id === Number(id))
+  if (!current) {
+    next(new Error("Not found."));
+  } else {
+    res.render('edit-contact', { contactid: id, current })
+  }
+})
+app.post("/contacts/:contactid/edit",
+  [
+    validateName("firstName", "First"),
+    validateName("lastName", "Last"),
+    body("phoneNumber")
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage("Phone number is required.")
+      .bail()
+      .matches(/^\d\d\d-\d\d\d-\d\d\d\d$/)
+      .withMessage("Invalid phone number format. Use ###-###-####."),
+  ],
+  (req, res, next) => {
+    let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(error => req.flash("error", error.msg));
+      res.render("new-contact", {
+        flash: req.flash(),
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        phoneNumber: req.body.phoneNumber,
+      });
+    } else {
+      next();
+    }
+  },
+  (req, res) => {
+    let id = req.params.contactid;
+    let list = req.session.contactData;
+    let index = list.findIndex(elm => elm.id === Number(id));
+    let updated = list[index];
+    if (index === -1) {
+      next(new Error("Not found."));
+    } else {
+      let { firstName, lastName, phoneNumber } = req.body;
+      updated.edit(firstName, lastName, phoneNumber);
+      req.flash("success", "Contact updated!");
+      res.redirect('/contacts')
+    }
+  }
+)
+
 app.post("/contacts/:contactid/destroy", (req, res, next) => {
   let id = req.params.contactid;
   let list = req.session.contactData;
-  let index = list.findIndex(elm => elm.id === id)
+  let index = list.findIndex(elm => elm.id === Number(id));
   if (index === -1) {
     next(new Error("Not found."));
   } else {
@@ -475,7 +527,6 @@ app.post("/contacts/:contactid/destroy", (req, res, next) => {
     req.flash("success", "Contact deleted.");
     res.redirect("/contacts");
   }
-
 })
 
 // Error handler
