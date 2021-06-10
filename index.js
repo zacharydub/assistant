@@ -8,6 +8,8 @@ const Todo = require("./lib/todo");
 const Contact = require("./lib/contact");
 const { sortTodoLists, sortTodos } = require("./lib/sort");
 const store = require("connect-loki");
+const favicon = require("serve-favicon");
+
 
 const app = express();
 const host = "localhost";
@@ -92,7 +94,7 @@ app.set("view engine", "pug");
 app.use(morgan("common"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
-
+app.use(favicon(path.join(dirname, "build", "favicon.ico")));
 app.use(session({
   cookie: {
     httpOnly: true,
