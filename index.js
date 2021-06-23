@@ -538,6 +538,6 @@ app.use((err, req, res, _next) => {
 });
 
 // Listener
-app.listen(3001, host, () => {
+app.listen(port, host, () => {
   console.log(`Todos is listening on port ${port} of ${host}!`);
 });
