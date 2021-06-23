@@ -13,7 +13,7 @@ const store = require("connect-loki");
 
 const app = express();
 const host = "localhost";
-//const port = 3001;
+const port = 3001;
 const LokiStore = store(session);
 
 //const contactData = [
@@ -111,7 +111,7 @@ app.use(session({
 
 app.use(flash());
 
-// Set up persistent session data
+//session data persistence set-up
 app.use((req, res, next) => {
   let todoLists = [];
   if ("todoLists" in req.session) {
@@ -130,9 +130,6 @@ app.use((req, res, next) => {
       contacts.push(Contact.makeContact(contact));
     });
   }
-  //if (!("contactData" in req.session)) {
-  //  req.session.contactData = clone(contactData);
-  //}
   req.session.contactData = contacts;
   next();
 });
@@ -144,15 +141,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// Find a todo list with the indicated ID. Returns `undefined` if not found.
-// Note that `todoListId` must be numeric.
+// Find specific todo list
 const loadTodoList = (todoListId, todoLists) => {
   return todoLists.find(todoList => todoList.id === todoListId);
 };
 
-// Find a todo with the indicated ID in the indicated todo list. Returns
-// `undefined` if not found. Note that both `todoListId` and `todoId` must be
-// numeric.
+// Find specific todo
 const loadTodo = (todoListId, todoId, todoLists) => {
   let todoList = loadTodoList(todoListId, todoLists);
   if (!todoList) return undefined;
@@ -160,7 +154,7 @@ const loadTodo = (todoListId, todoId, todoLists) => {
   return todoList.todos.find(todo => todo.id === todoId);
 };
 
-// Redirect start page
+
 app.get("/", (req, res) => {
   res.redirect("/home-page");
 });
@@ -391,7 +385,7 @@ app.post("/lists/:todoListId/edit",
   }
 );
 
-
+//Render contacts
 app.get("/contacts", (req, res) => {
   console.log(req.session.contactData)
   res.render("contacts", {
@@ -399,6 +393,8 @@ app.get("/contacts", (req, res) => {
     currentPath: req.path
   });
 });
+
+//Add new contact page
 app.get("/contacts/new", (req, res) => {
   res.render("new-contact");
 });
@@ -413,6 +409,8 @@ const validateName = (name, whichName) => {
     .isAlpha()
     .withMessage(`${whichName} name contains invalid characters. The name must be alphabetic.`);
 };
+
+//Add new contact
 app.post("/contacts/new",
   [
     validateName("firstName", "First"),
@@ -429,17 +427,9 @@ app.post("/contacts/new",
   (req, res, next) => {
     let errors = validationResult(req);
     if (!errors.isEmpty()) {
-      //new code:
       errors.array().forEach(error => req.flash("error", error.msg));
-      // The next 2 lines are for demonstration purposes only:
-      // req.flash("info", "I'm a doctor, not a bricklayer.");
-      // req.flash("success", "Engage!");
-      //end new code
-      // console.log('msg prop: ', errors.errors[0].msg)
       res.render("new-contact", {
-        //next new line:
         flash: req.flash(),
-        // errorMessages: errors.array().map(error => error.msg),
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         phoneNumber: req.body.phoneNumber,
@@ -449,22 +439,18 @@ app.post("/contacts/new",
     }
   },
   (req, res) => {
-    //console.log(req.body)
     let { firstName, lastName, phoneNumber } = req.body
     console.log(firstName);
     req.session.contactData.push(
       new Contact(firstName, lastName, phoneNumber)
-      //  {
-      //  firstName: req.body.firstName,
-      //  lastName: req.body.lastName,
-      //  phoneNumber: req.body.phoneNumber,
-      //}
     );
 
     req.flash("success", "New contact added to list!");
     res.redirect("/contacts");
   }
 );
+
+//Edit contact page
 app.get("/contacts/:contactid/edit", (req, res, next) => {
   let id = req.params.contactid;
   let list = req.session.contactData;
@@ -475,6 +461,8 @@ app.get("/contacts/:contactid/edit", (req, res, next) => {
     res.render('edit-contact', { contactid: id, current })
   }
 })
+
+//Edit contact
 app.post("/contacts/:contactid/edit",
   [
     validateName("firstName", "First"),
@@ -517,6 +505,7 @@ app.post("/contacts/:contactid/edit",
   }
 )
 
+//Delete contact
 app.post("/contacts/:contactid/destroy", (req, res, next) => {
   let id = req.params.contactid;
   let list = req.session.contactData;
@@ -531,13 +520,12 @@ app.post("/contacts/:contactid/destroy", (req, res, next) => {
   }
 })
 
-// Error handler
+//error handler
 app.use((err, req, res, _next) => {
-  console.log(err); // Writes more extensive information to the console log
+  console.log(err);
   res.status(404).send(err.message);
 });
 
-// Listener
 app.listen(port, host, () => {
   console.log(`Todos is listening on port ${port} of ${host}!`);
 });
