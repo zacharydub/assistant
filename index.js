@@ -13,7 +13,7 @@ const store = require("connect-loki");
 
 const app = express();
 const host = "localhost";
-const port = 3001;
+const port = 3002;
 const LokiStore = store(session);
 
 //const contactData = [
